@@ -7,7 +7,7 @@ import bodyParser from 'body-parser';
 
 import userRouter from './routes/user';
 import morgan from 'morgan';
-import { ErrorHandler } from './middlewares';
+import { encryptHandler,errorHandler} from './middlewares';
 
 
 console.log(`mongo url:${MONGO_URL}`);
@@ -18,10 +18,11 @@ app.use(morgan('short'));
 
 app.use(bodyParser.json());
 
+app.use(encryptHandler);
 app.use("/users/api/v1/",userRouter);
 
 
-app.use(ErrorHandler);
+app.use(errorHandler);
 
 app.listen(PORT,()=>{
  log.debug(`User-Api listening on port:${PORT}`);

@@ -1,6 +1,8 @@
+import { NextFunction } from 'express';
 import mongoose, { Schema, Document } from 'mongoose';
 import {User} from '../types/user';
-export interface DocumentUser extends Document,User{
+import {encrypt} from '../use-cases';
+export interface IUser extends Document,User{
   
 }
 
@@ -13,6 +15,8 @@ const userScheme: Schema = new Schema({
 firstname: {
        type: String, 
        required: [true,"Please add first name"], 
+       minlength:[2,"needs to be at least 6 characters"],
+       maxlength:[20,"cant be longer than 20 characters"],
     },
 
   role:{
@@ -24,7 +28,9 @@ firstname: {
   password:{
     type:String,
     required:[true,"Please add password"],
+    minlength:[6,"needs to be at least 6 characters"],
     select:false,
+    
   },
   lastname: {
        type: String,
@@ -37,10 +43,7 @@ firstname: {
         type:Number,
       },
 });
-userScheme.pre("",function(){
-  
-  
-});
+
 
 userScheme.methods.getBmi = function getBmi():number{
   if(this.height&&this.weight){
@@ -51,4 +54,4 @@ userScheme.methods.getBmi = function getBmi():number{
   return -1;
 }
 // Export the model and return your IUser interface
-export default mongoose.model<DocumentUser>('User', userScheme);
+export default mongoose.model<IUser>('User', userScheme);

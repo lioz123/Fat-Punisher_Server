@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from "express";
+import { Mongoose } from "mongoose";
+import { IUser } from "../Modules/UserModule";
 
 
 
@@ -13,10 +15,22 @@ interface User {
     role?:"admin"|"user";
 }
 
-interface UserRequest extends User,Request{
+interface UserRequest extends Request{
+    user?:User;
 
 }
 
+interface Result{
+    success:boolean;
+    data:IUser | null| IUser[] | string;
+    error?:Error;
+    decodedToken?:{
+        id:string;
+    };
+}
+type UserFunction = (user:User,next:NextFunction)=>Promise<Result>;
 
+type IdFunction = (id:string,next:NextFunction)=>Promise<Result>;
 type MiddleWareFunction = (req:UserRequest,res:Response,next:NextFunction)=>void;
-export  {User,UserRequest,MiddleWareFunction};
+
+export  {User,UserRequest,MiddleWareFunction,IdFunction,UserFunction,Result};

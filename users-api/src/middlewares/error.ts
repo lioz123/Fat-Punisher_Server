@@ -20,6 +20,10 @@ const getErrorResponse = (err:Error):ErrorResponse=>{
         return err as ErrorResponse;
     }
 
+    if(err.name==="ValidationError"){
+        return new ErrorResponse(400,err.message);
+    }
+
     if(err instanceof MongoError){
         switch((err as MongoError).code){
             case 11000:
@@ -29,6 +33,7 @@ const getErrorResponse = (err:Error):ErrorResponse=>{
                 break;
             }
     }
+
 
     return new ErrorResponse(500,"Server Error Please Try Again");
 

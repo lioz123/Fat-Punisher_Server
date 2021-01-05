@@ -1,15 +1,15 @@
-import { create } from 'domain';
 import express from 'express';
-import {createUser,updateUser,getUserById,getUsers} from '../controllers/user';
+
+import {getById,getMany,create,update} from '../controllers';
 const userRouter = express.Router();
 
 userRouter.route("/:id")
 .delete()
-.post(getUserById);
+.get(getById);
 
 userRouter.route("/")
-.put(updateUser)  
-.get(getUsers)
-.post(createUser);
+.put(update)  
+.get(getMany)
+.post(create);
 
 export default userRouter;

@@ -1,40 +1,53 @@
 import mongoose, { model } from 'mongoose';
-import UserModule from '../Modules/UserModule';
+import UserModule, { IUser } from '../Modules/UserModule';
 import { User } from '../types/user';
 import logger from '../utils/log';
-const createDataBaseAdapter =(moduleName:string)=>{
-    const module = mongoose.model(moduleName);
+
+export interface Db {
+         findOne:(object:any,selectPassword?:boolean)=>Promise<IUser>|null;
+         findById :(id:string)=>Promise<IUser>|null;
+         find: ()=>Promise<IUser>|null;
+         findByIdAndUpdate: (user:User)=>Promise<IUser>|null;
+         remove :(id:string)=>Promise<IUser>|null;
+         create: (user:User)=>Promise<IUser>|null;
+}
+const createDataBaseAdapter =()=>{
+
+    const module = mongoose.model("User");
     
     const findById =async(id:string)=>{
-        return  await module.findById(id);
+        return   module.findById(id);
     }
-    const find =async(user:User)=>{
-        return await module.find(user);
+    const find =async()=>{
+        return  module.find();
     }
 
     const findByIdAndUpdate=async(user:User)=>{
-        return await module.findByIdAndUpdate(user.userID,user);
+        return  module.findByIdAndUpdate(user.userID,user,{useFindAndModify:false,new:true,runValidators:true});
     }
 
     const remove =async(id:string)=>{
-        return await module.remove(id);
+        return  module.remove(id);
     }
     const create = async(user:User)=>{
-        switch(moduleName){
-            case "User":
-                return await UserModule.create({...user,role:"user"});
-            default:
-                return null;
-        }
+        return  UserModule.create({...user,role:"user"});
     }
-  
-    return Object.freeze({
-        findById,
-        find,
-        remove,
-        findByIdAndUpdate,
-        create,
-    });
+    const findOne = async (email:string,selectPassword?:boolean)=>{
+        if(selectPassword){
+            return UserModule.findOne({email}).select("+password");
+        }
+        return UserModule.findOne({email});
+    }
+    const db:Db ={
+            findById,
+            find,
+            remove,
+            findByIdAndUpdate,
+            create,
+            findOne
+        }
+    
+    return Object.freeze(db);
 }
 
 
